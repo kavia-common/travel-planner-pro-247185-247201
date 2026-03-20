@@ -1,3 +1,10 @@
+"""
+OpenAPI schema generator for Travel Planner Pro.
+
+Generates the OpenAPI JSON specification file from the FastAPI app
+and writes it to the interfaces directory.
+"""
+
 import json
 import os
 
@@ -13,3 +20,5 @@ output_path = os.path.join(output_dir, "openapi.json")
 
 with open(output_path, "w") as f:
     json.dump(openapi_schema, f, indent=2)
+
+print(f"OpenAPI schema written to {output_path}")
