@@ -49,23 +49,19 @@ allowed_origins_str = os.getenv(
 )
 allowed_origins = [o.strip() for o in allowed_origins_str.split(",") if o.strip()]
 
-# Also add the FRONTEND_URL if present
-frontend_url = os.getenv("FRONTEND_URL", "")
-if frontend_url and frontend_url not in allowed_origins:
-    allowed_origins.append(frontend_url)
-
-allowed_methods_str = os.getenv("ALLOWED_METHODS", "GET,POST,PUT,DELETE,PATCH,OPTIONS")
-allowed_methods = [m.strip() for m in allowed_methods_str.split(",")]
-
-allowed_headers_str = os.getenv("ALLOWED_HEADERS", "Content-Type,Authorization,X-Requested-With")
-allowed_headers = [h.strip() for h in allowed_headers_str.split(",")]
+# Also add FRONTEND_URL and SITE_URL if present and not already listed
+for env_key in ("FRONTEND_URL", "SITE_URL"):
+    extra_origin = os.getenv(env_key, "")
+    if extra_origin and extra_origin not in allowed_origins:
+        allowed_origins.append(extra_origin)
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
     allow_credentials=True,
-    allow_methods=allowed_methods,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allow_headers=["*"],  # Allow all headers to ensure JWT Authorization works
+    max_age=int(os.getenv("CORS_MAX_AGE", "3600")),
 )
 
 # ─── Register Routers ───
